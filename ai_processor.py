@@ -348,7 +348,7 @@ def print_summary(data: dict):
     print(f"\nEXPERIENCE ({len(data['experience'])} jobs):")
     for job in data["experience"]:
         print(f"\n  {job['dates']} — {job['facility_name']}, {job['facility_city_state']}")
-        print(f"    Discipline: {job['discipline']} ({job['employment_type']})")
+        print(f"    Discipline: {job['discipline']} ({job.get('role_level', 'Staff')})")
         print(f"    Specialty:  {job['specialty']}")
         print(f"    EMR:        {job['emr'] or '⚠ MISSING'}")
         print(f"    Beds:       {job['total_staffed_beds'] or '⚠ MISSING'}")

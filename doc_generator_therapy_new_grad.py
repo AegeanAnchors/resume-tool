@@ -215,11 +215,8 @@ def _add_job_entry(doc, job):
     _add_hanging_line(doc, f"{dates}\t{fac_line}" if dates else f"\t{fac_line}")
 
     discipline = _safe(job.get("discipline"))
-    emp_type   = _safe(job.get("employment_type"))
-    if discipline and emp_type:
-        disc_line = f"{discipline} ({emp_type})"
-    else:
-        disc_line = discipline or emp_type or None
+    role_level = _safe(job.get("role_level")) or "Staff"
+    disc_line  = f"{discipline} ({role_level})" if discipline else None
 
     if disc_line:
         para = doc.add_paragraph(style="Position")

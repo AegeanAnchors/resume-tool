@@ -64,6 +64,10 @@ CRITICAL RULES YOU MUST FOLLOW:
    - RRT or CRT → "Respiratory Therapist"
 10. For clinical duration: capture exactly as written (e.g. "10 weeks", "8 weeks").
     Set to null if not stated.
+11. For "role_level" (the candidate's staffing or supervisory level for paid work experience):
+    - Default is always "Staff"
+    - Only use a different value if the resume explicitly states a supervisory title for that job
+    - NEVER infer — only use what is explicitly written
 
 FINDING THE CANDIDATE NAME:
 - The name is almost always the first or most prominent text at the top
@@ -108,6 +112,7 @@ Return ONLY a valid JSON object with this exact structure. No explanation, no ma
       "dates": "MM/YYYY – MM/YYYY or Present",
       "discipline": "Physical Therapist or Physical Therapy Aide etc.",
       "employment_type": "Staff or Per Diem",
+      "role_level": "Staff — or supervisory title only if explicitly stated",
       "is_travel": false,
       "setting_specialty": "Outpatient Orthopedic or Acute Care etc., null if unknown",
       "bullets": []
@@ -193,6 +198,7 @@ def _validate_and_fill_defaults(data: dict):
         job.setdefault("dates", "")
         job.setdefault("discipline", "")
         job.setdefault("employment_type", "Staff")
+        job.setdefault("role_level", "Staff")
         job.setdefault("is_travel", False)
         job.setdefault("setting_specialty", None)
         job.setdefault("bullets", [])

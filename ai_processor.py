@@ -57,11 +57,19 @@ CRITICAL RULES YOU MUST FOLLOW:
    captured elsewhere. Never invent, rephrase, or combine bullets — pull only from what
    the candidate wrote for THAT specific job. Use an empty array [] if none were listed.
    HARD LIMIT: return no more than 5 bullet strings in the array.
-8. Employment type rules:
-   - "Travel" if there is a separate agency employer listed
-   - "Per Diem" if the resume states per diem
-   - "Staff" if the person was a regular employee (no agency, not per diem)
-9. For "employed_through": use the agency name if Travel, "Direct" if Staff or Per Diem with no agency
+8. For "employed_through" (how the candidate was employed for that job):
+   - "Travel"   — only if the resume lists a travel agency or explicitly says travel
+   - "Per Diem" — only if the resume states per diem or PRN
+   - "Direct"   — only if the resume explicitly states direct hire or direct employment
+   - "Staff"    — default for all other regular/full-time/part-time employment; use when nothing specific is stated
+9. For "role_level" (the candidate's staffing or supervisory level for that job):
+   - Default is always "Staff"
+   - Only use a different value if the resume explicitly states a supervisory title for that specific job
+   - "Charge" if the resume mentions Charge Nurse, Charge RN, or similar
+   - "Lead" if the resume mentions Lead Nurse, Lead RN, or similar
+   - "Supervisor" if the resume mentions Nursing Supervisor or similar
+   - "Manager" if the resume mentions Nurse Manager or similar
+   - NEVER infer a supervisory level — only use what is explicitly written
 
 FINDING THE CANDIDATE NAME — very important:
 - The candidate's name is almost always the very first line of the resume, or the largest/most prominent text at the top
@@ -108,10 +116,10 @@ Return ONLY a valid JSON object with this exact structure. No explanation, no ma
     {{
       "facility_name": "FACILITY NAME IN ALL CAPS",
       "facility_city_state": "City, ST",
-      "employed_through": "Agency Name if travel, or Direct",
+      "employed_through": "Staff or Direct or Travel or Per Diem — see rules above",
       "dates": "MM/YYYY – MM/YYYY or Present",
       "discipline": "RN or LPN",
-      "employment_type": "Travel or Per Diem or Staff",
+      "role_level": "Staff — or Charge, Lead, Supervisor, Manager only if explicitly stated",
       "specialty": "the unit/specialty they worked",
       "emr": "EMR system name if explicitly on resume, otherwise null",
       "total_staffed_beds": "number if on resume, otherwise null",
@@ -232,10 +240,10 @@ def _validate_structure(data: dict):
     for i, job in enumerate(data.get("experience", [])):
         job.setdefault("facility_name", f"FACILITY #{i+1}")
         job.setdefault("facility_city_state", "")
-        job.setdefault("employed_through", None)
+        job.setdefault("employed_through", "Staff")
         job.setdefault("dates", "")
         job.setdefault("discipline", "")
-        job.setdefault("employment_type", "")
+        job.setdefault("role_level", "Staff")
         job.setdefault("specialty", None)
         job.setdefault("emr", None)
         job.setdefault("total_staffed_beds", None)

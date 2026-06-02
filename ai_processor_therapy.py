@@ -63,6 +63,14 @@ CRITICAL RULES YOU MUST FOLLOW:
    - "Per Diem" if per diem / PRN
    - "IC" if independent contractor / 1099
    - "Staff" if regular employed position
+9b. For "role_level" (the candidate's staffing or supervisory level for that job):
+    - Default is always "Staff"
+    - Only use a different value if the resume explicitly states a supervisory title for that specific job
+    - "Charge" if the resume mentions Charge role
+    - "Lead" if the resume mentions Lead role
+    - "Supervisor" if the resume mentions Supervisor role
+    - "Manager" if the resume mentions Manager role
+    - NEVER infer a supervisory level — only use what is explicitly written
 10. For credential: capture the post-nominal letters exactly as written on the resume
     (e.g. "DPT, PT", "PT", "MOT, OTR/L", "OT", "CCC-SLP", "MS, SLP", "PTA", "COTA",
     "RRT", "CRT"). Do not include the candidate's name in this field.
@@ -121,6 +129,7 @@ Return ONLY a valid JSON object with this exact structure. No explanation, no ma
       "dates": "MM/YYYY – MM/YYYY or Present",
       "discipline": "Physical Therapist or Occupational Therapist or Speech-Language Pathologist etc.",
       "employment_type": "Travel or Staff or Per Diem or IC",
+      "role_level": "Staff — or Charge, Lead, Supervisor, Manager only if explicitly stated",
       "is_travel": true,
       "setting_specialty": "Outpatient Orthopedic or Acute Care or Inpatient Rehab etc., null if unknown",
       "bullets": []
@@ -204,6 +213,7 @@ def _validate_and_fill_defaults(data: dict):
         job.setdefault("dates", "")
         job.setdefault("discipline", "")
         job.setdefault("employment_type", "Staff")
+        job.setdefault("role_level", "Staff")
         job.setdefault("is_travel", False)
         job.setdefault("setting_specialty", None)
         job.setdefault("bullets", [])

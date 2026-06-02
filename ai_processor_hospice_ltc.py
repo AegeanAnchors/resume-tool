@@ -68,11 +68,19 @@ CRITICAL RULES YOU MUST FOLLOW:
    Only include what is explicitly written for that job. Set to null if nothing found.
    NO DUPLICATES: do not list a term as its own bullet if it already appears inside
    a longer bullet. Use the more descriptive bullet and drop the redundant short one.
-9. Employment type rules:
-   - "Travel" if a separate agency employer is listed
-   - "Per Diem" if the resume states per diem or PRN
-   - "Staff" if regular employee (no agency, not per diem)
-10. For "employed_through": agency name if Travel, "Direct" if Staff or Per Diem
+9. For "employed_through" (how the candidate was employed for that job):
+   - "Travel"   — only if the resume lists a travel agency or explicitly says travel
+   - "Per Diem" — only if the resume states per diem or PRN
+   - "Direct"   — only if the resume explicitly states direct hire or direct employment
+   - "Staff"    — default for all other regular/full-time/part-time employment; use when nothing specific is stated
+10. For "role_level" (the candidate's staffing or supervisory level for that job):
+    - Default is always "Staff"
+    - Only use a different value if the resume explicitly states a supervisory title for that specific job
+    - "Charge" if the resume mentions Charge Nurse, Charge RN, or similar
+    - "Lead" if the resume mentions Lead Nurse or similar
+    - "Supervisor" if the resume mentions Nursing Supervisor or similar
+    - "Manager" if the resume mentions Nurse Manager or similar
+    - NEVER infer a supervisory level — only use what is explicitly written
 11. For "is_hospice": set to true if the job is a hospice position
     (hospice agency, inpatient hospice, palliative care, home hospice, etc.).
     Set to false for LTC/SNF/nursing home/assisted living/memory care/rehab facility,
@@ -120,10 +128,10 @@ Return ONLY a valid JSON object with this exact structure. No explanation, no ma
     {{
       "organization_name": "ORGANIZATION NAME IN ALL CAPS",
       "organization_city_state": "City, ST",
-      "employed_through": "Agency Name if travel, or Direct",
+      "employed_through": "Staff or Direct or Travel or Per Diem — see rules above",
       "dates": "MM/YYYY – MM/YYYY or Present",
       "discipline": "RN or LPN",
-      "employment_type": "Travel or Per Diem or Staff",
+      "role_level": "Staff — or Charge, Lead, Supervisor, Manager only if explicitly stated",
       "specialty": "hospice specialty or resident population from the resume",
       "role": "position title e.g. Case Manager, Charge Nurse, MDS Coordinator, Admissions Nurse, null if not listed",
       "is_hospice": true,
@@ -230,10 +238,10 @@ def _validate_and_fill_defaults(data: dict):
     for job in data.get("experience", []):
         job.setdefault("organization_name", "UNKNOWN ORGANIZATION")
         job.setdefault("organization_city_state", "")
-        job.setdefault("employed_through", None)
+        job.setdefault("employed_through", "Staff")
         job.setdefault("dates", "")
         job.setdefault("discipline", "")
-        job.setdefault("employment_type", "")
+        job.setdefault("role_level", "Staff")
         job.setdefault("specialty", None)
         job.setdefault("role", None)
         job.setdefault("emr", None)

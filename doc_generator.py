@@ -147,8 +147,8 @@ def _add_job_entry(doc, job):
     _add_field_line(doc, "Employed Through", job.get("employed_through"))
 
     discipline = _safe(job.get("discipline"))
-    emp_type   = _safe(job.get("employment_type"))
-    disc_val   = f"{discipline} ({emp_type})" if discipline and emp_type else discipline or None
+    role_level = _safe(job.get("role_level")) or "Staff"
+    disc_val   = f"{discipline} ({role_level})" if discipline else None
     _add_field_line(doc, "Discipline", disc_val)
 
     _add_field_line(doc, "Specialty",       job.get("specialty"))

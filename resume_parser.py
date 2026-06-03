@@ -150,13 +150,72 @@ def _read_word_document(file_path: str) -> str:
             lines.append(text)
 
     # ── Step 3: Read any tables in the document ───────────────────────────
+    # Many resumes use two-column tables with dates in the left column and
+    # job details in the right column.  When both columns have the same number
+    # of blank-line-separated entries, we pair them so the AI always sees
+    # each date immediately next to its matching job — preventing mismatches.
     for table in doc.tables:
         for row in table.rows:
-            row_text = []
+            # Deduplicate cells — python-docx returns merged cells multiple times
+            seen_cell_ids: set = set()
+            unique_cell_paras: list = []
             for cell in row.cells:
-                cell_text = cell.text.strip()
-                if cell_text:
-                    row_text.append(cell_text)
+                cell_id = id(cell._tc)
+                if cell_id not in seen_cell_ids:
+                    seen_cell_ids.add(cell_id)
+                    paras = [p.text.strip() for p in cell.paragraphs]
+                    unique_cell_paras.append(paras)
+
+            # Drop cells that are entirely empty
+            non_empty = [cp for cp in unique_cell_paras if any(p for p in cp)]
+            if not non_empty:
+                continue
+
+            if len(non_empty) == 2:
+                # Helper: split a cell's paragraphs into blocks on blank lines
+                def _to_blocks(paras: list) -> list:
+                    blocks, cur = [], []
+                    for p in paras:
+                        if p:
+                            cur.append(p)
+                        elif cur:
+                            blocks.append(cur)
+                            cur = []
+                    if cur:
+                        blocks.append(cur)
+                    return blocks
+
+                left_paras   = non_empty[0]
+                right_paras  = non_empty[1]
+                left_blocks  = _to_blocks(left_paras)
+                right_blocks = _to_blocks(right_paras)
+
+                # Case A: Both cells have the same number of blank-separated
+                # blocks (>1) — pair them directly.
+                if (len(left_blocks) == len(right_blocks)
+                        and len(left_blocks) > 1):
+                    for lb, rb in zip(left_blocks, right_blocks):
+                        lines.append("\n".join(lb + rb))
+                    continue
+
+                # Case B: Left cell has no blank lines (1 block of N lines) but
+                # right cell splits into N blank-separated blocks.
+                # Common pattern: dates stacked in left column, jobs separated
+                # by blank lines in right column.
+                left_entries = [p for p in left_paras if p]
+                if (len(left_blocks) == 1
+                        and len(right_blocks) > 1
+                        and len(left_entries) == len(right_blocks)):
+                    for le, rb in zip(left_entries, right_blocks):
+                        lines.append("\n".join([le] + rb))
+                    continue
+
+            # Default: join all non-empty cells with a pipe separator
+            row_text = []
+            for cell_paras in non_empty:
+                text = "\n".join(p for p in cell_paras if p).strip()
+                if text:
+                    row_text.append(text)
             if row_text:
                 lines.append(" | ".join(row_text))
 

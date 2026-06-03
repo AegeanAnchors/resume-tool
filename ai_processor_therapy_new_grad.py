@@ -69,6 +69,11 @@ CRITICAL RULES YOU MUST FOLLOW:
     - Only use a different value if the resume explicitly states a supervisory title for that job
     - NEVER infer — only use what is explicitly written
 
+For employment dates: only use dates you can confidently match to a specific job.
+If the resume layout makes it unclear which date range belongs to which employer,
+set "dates" to null — it will be highlighted yellow for recruiter verification.
+Never assign a date to a job unless you are certain it is correct.
+
 FINDING THE CANDIDATE NAME:
 - The name is almost always the first or most prominent text at the top
 - full_name must contain ONLY the person's name, nothing else

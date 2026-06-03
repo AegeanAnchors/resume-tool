@@ -84,6 +84,11 @@ CRITICAL RULES YOU MUST FOLLOW:
 12. For clinical experience duration: capture exactly as written (e.g. "10 weeks",
     "8 weeks", "12 weeks"). Set to null if not stated.
 
+For employment dates: only use dates you can confidently match to a specific job.
+If the resume layout makes it unclear which date range belongs to which employer,
+set "dates" to null — it will be highlighted yellow for recruiter verification.
+Never assign a date to a job unless you are certain it is correct.
+
 FINDING THE CANDIDATE NAME:
 - The name is almost always the first or most prominent text at the top
 - It is a person's full name only — no phone numbers, emails, or credentials

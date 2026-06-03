@@ -84,6 +84,11 @@ CRITICAL RULES YOU MUST FOLLOW:
       "Performed OASIS assessments" do NOT also add a standalone "OASIS" bullet.
       Consolidate — use the more descriptive bullet and drop the redundant short one.
 
+For employment dates: only use dates you can confidently match to a specific job.
+If the resume layout makes it unclear which date range belongs to which employer,
+set "dates" to null — it will be highlighted yellow for recruiter verification.
+Never assign a date to a job unless you are certain it is correct.
+
 FINDING THE CANDIDATE NAME:
 - The name is almost always the first or most prominent text at the top
 - It is a person's full name only — no phone numbers, emails, or credentials

@@ -71,6 +71,12 @@ CRITICAL RULES YOU MUST FOLLOW:
    - "Manager" if the resume mentions Nurse Manager or similar
    - NEVER infer a supervisory level — only use what is explicitly written
 
+10. For employment dates: only use dates you can confidently match to a specific job.
+    If the resume layout makes it unclear which date range belongs to which employer
+    (e.g. dates and job details are in separate columns), set "dates" to null — it will
+    be highlighted yellow for recruiter verification. Never assign a date to a job unless
+    you are certain it is correct.
+
 FINDING THE CANDIDATE NAME — very important:
 - The candidate's name is almost always the very first line of the resume, or the largest/most prominent text at the top
 - It is a person's full name — first name and last name (sometimes middle name too)

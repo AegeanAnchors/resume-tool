@@ -218,8 +218,17 @@ def _read_word_document(file_path: str) -> str:
                 # marks the start of a new employer.  Split at those boundaries
                 # and pair the N groups with the N left blocks.
                 import re as _re
+                # Match "City ST" or "City Name ST" where ST is a known US
+                # state abbreviation.  Deliberately avoids the broad
+                # ",\s*[A-Z]{2}" pattern that falsely fires on medical
+                # abbreviations like ", IV" or ", SC" inside bullet text.
+                _US_STATES = (
+                    r'AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|'
+                    r'LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|'
+                    r'OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC'
+                )
                 _city_state_re = _re.compile(
-                    r'(?:,\s*[A-Z]{2}\b|[A-Z][a-z]+(?: [A-Z][a-z]+)* [A-Z]{2}\b)'
+                    r'[A-Z][a-z]+(?: [A-Z][a-z]+)* (?:' + _US_STATES + r')\b'
                 )
 
                 def _split_right_on_facility_lines(paras: list, n: int) -> list:

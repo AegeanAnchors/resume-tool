@@ -210,6 +210,54 @@ def _read_word_document(file_path: str) -> str:
                         lines.append("\n".join([le] + rb))
                     continue
 
+                # Case C: Left cell has N>1 blank-separated blocks (dates) and
+                # right cell has only 1 block — jobs run together with no blank
+                # line between them.  Detect job-entry boundaries in the right
+                # cell: any non-first line that contains a city/state-like
+                # pattern (", XX" or "City ST" at the end of a facility name)
+                # marks the start of a new employer.  Split at those boundaries
+                # and pair the N groups with the N left blocks.
+                import re as _re
+                _city_state_re = _re.compile(
+                    r'(?:,\s*[A-Z]{2}\b|[A-Z][a-z]+(?: [A-Z][a-z]+)* [A-Z]{2}\b)'
+                )
+
+                def _split_right_on_facility_lines(paras: list, n: int) -> list:
+                    """
+                    Split a flat list of paragraphs into exactly n groups by
+                    treating any line (after index 0) that looks like a facility
+                    header — i.e. it contains a city/state pattern — as the
+                    first line of the next group.
+                    Returns a list of n paragraph-lists, or [] if split fails.
+                    """
+                    non_empty_paras = [p for p in paras if p]
+                    if not non_empty_paras:
+                        return []
+
+                    # Collect indices of lines that look like new-job headers
+                    split_indices = [0]  # first job always starts at 0
+                    for idx in range(1, len(non_empty_paras)):
+                        if _city_state_re.search(non_empty_paras[idx]):
+                            split_indices.append(idx)
+
+                    if len(split_indices) != n:
+                        return []  # can't pair reliably — fall through to default
+
+                    groups = []
+                    for g, start in enumerate(split_indices):
+                        end = split_indices[g + 1] if g + 1 < len(split_indices) else len(non_empty_paras)
+                        groups.append(non_empty_paras[start:end])
+                    return groups
+
+                if len(left_blocks) > 1 and len(right_blocks) == 1:
+                    right_groups = _split_right_on_facility_lines(
+                        right_paras, len(left_blocks)
+                    )
+                    if right_groups:
+                        for lb, rg in zip(left_blocks, right_groups):
+                            lines.append("\n".join(lb + rg))
+                        continue
+
             # Default: join all non-empty cells with a pipe separator
             row_text = []
             for cell_paras in non_empty:
